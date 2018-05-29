@@ -1,4 +1,4 @@
-// Decorate an accessor function with obvservable methods
+// Decorate an accessor function with observable methods
 function observablify(fn) {
   fn.publish = function publish() {
     // TODO set `this` for handler
@@ -29,6 +29,7 @@ function observablify(fn) {
 // obsValue('abc');   // => (identical value, skipped)
 // obsValue('def');   // => 'def', 'abc'
 //
+
 export function ov(value) {
   function accessor(newValue) {
     if (arguments.length && newValue !== accessor.value) {
@@ -63,7 +64,6 @@ export function oo(obj) {
 
   return o;
 }
-
 
 export function oa(arr) {
   const o = ov(arr);

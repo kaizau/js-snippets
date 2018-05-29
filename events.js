@@ -1,6 +1,7 @@
 //
 // A tiny global event bus
 //
+
 export default {
   events: Object.create(null),
 

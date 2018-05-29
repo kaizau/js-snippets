@@ -1,21 +1,22 @@
 //
-// querySelector
-// querySelectorAll
-//
-// qs('.selector')
-// qs(parentElement, '.children');
+// querySelector('.selector')
+// querySelector(parentElement, '.children');
 //
 
-export function querySelector(...args) {
-  const selector = args.pop();
-  const scope = args.pop() || document;
+export function querySelector(scope, selector) {
+  if (!selector) {
+    selector = scope;
+    scope = document;
+  }
 
   return scope.querySelector(selector);
 }
 
-export function querySelectorAll(...args) {
-  const selector = args.pop();
-  const scope = args.pop() || document;
+export function querySelectorAll(scope, selector) {
+  if (!selector) {
+    selector = scope;
+    scope = document;
+  }
 
   // Converts NodeList to Array
   return Array.prototype.slice.call(scope.querySelectorAll(selector));
