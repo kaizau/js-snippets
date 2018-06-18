@@ -1,15 +1,13 @@
 // Decorate an accessor function with observable methods
 function observablify(fn) {
   fn.publish = function publish() {
-    // TODO set `this` for handler
-    fn.listeners.forEach(handler => handler(fn.value, fn.previousValue, fn));
+    fn.listeners.forEach(handler => handler.call(fn, fn.value, fn.previousValue));
   };
 
   fn.subscribe = function subscribe(handler) {
     fn.listeners.push(handler);
   };
 
-  // TODO return unsubscribe function instead?
   fn.unsubscribe = function unsubscribe(handler) {
     const index = fn.listeners.indexOf(handler);
     if (index > -1) {
@@ -47,28 +45,13 @@ export function ov(value) {
   return observablify(accessor);
 }
 
-export function oo(obj) {
-  const o = ov(obj);
-
-  // TODO handle previousValue
-  o.set = function set() {
-  };
-
-  o.get = function get() {
-  };
-
-  // Maybe use this instead of a function wrapper?
-  o.exec = function exec(methodName, ...args) {
-
-  };
-
-  return o;
-}
-
+//
+// An observable array
+//
 export function oa(arr) {
   const o = ov(arr);
 
-  // Wrap array methods
+  // TODO Wrap all array methods (no Proxy, for now)
 
   return o;
 }
