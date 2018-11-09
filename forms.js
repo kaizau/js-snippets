@@ -1,36 +1,36 @@
 //
-// A lightweight, configurable wrapper around HTML5 form validation. Provides
-// hooks at both the form and field levels for maximum flexibility.
+// A configurable wrapper around HTML5 form validation. Provides hooks at both
+// the form and field levels as well as conventions for custom validation.
 //
 // - Set <form novalidate> to suppress native validation messages
-// - Uses Object.assign, which should be polyfilled for IE
+// - Uses Object.assign, which should be polyfilled for IE11
 //
 
 const defaultOptions = {
-  // False to ignore field-level events
-  fieldEvent: 'change',
+  // Set to false to only validate on submit
+  trigger: 'change',
 
-  // What to validate? Can be used with validateCustom() to validate
-  // non-standard form fields (ex: Stripe Checkout)
+  // Select fields to validate. Can be used with validateCustom() to validate
+  // non-standard elements (ex: Stripe Checkout)
   fieldSelector: '[data-validate]',
 
-  // Custom validators that return promises. Assign via
-  // data-validate-custom='key'.
-  validateCustom: {
-    // matchValue() { return new Promise() },
-    // stripe() { return new Promise() }
+  // Optionally exclude some fields before each validation
+  fieldFilter(fields) {
+    return fields.filter(field => !field.disabled);
+  },
+
+  // Custom validators. Matched by field[name]. Must return a promise.
+  customValidators: {
+    // checkboxes(field) { return new Promise() },
+    // stripeElement(field) { return new Promise() },
+    // passwordConfirm(field) { return new Promise() }
   },
 
   // Disable submit button, show loading icon, etc.
   beforeValidate(form, fields) {
   },
 
-  // Skip certain fields, etc.
-  filterFields(fields) {
-    return fields.filter(field => !field.disabled);
-  },
-
-  // Submit, show message, etc.
+  // Submit form, show message, etc.
   formValid(form, fields) {
     form.submit();
   },
@@ -41,10 +41,16 @@ const defaultOptions = {
 
   // Clear field error
   fieldValid(field) {
+    if (field.validity.customError) {
+      field.setCustomValidity('');
+    }
   },
 
-  // Show field error
+  // Show field error, defaults to using data-validate='...' value
   fieldError(field) {
+    if (field.dataset.validate) {
+      field.setCustomValidity(field.dataset.validate);
+    }
   }
 };
 
@@ -53,8 +59,8 @@ export function validateForm(form, options = {}) {
   const fields = Array.prototype.slice.call(form.querySelectorAll(opts.fieldSelector));
 
   // Validate each field
-  if (opts.fieldEvent) {
-    form.addEventListener(opts.fieldEvent, e => {
+  if (opts.trigger) {
+    form.addEventListener(opts.trigger, e => {
       if (fields.indexOf(e.target) > -1) {
         opts.validateField(e.target, opts);
       }
@@ -73,9 +79,8 @@ export function validateForm(form, options = {}) {
   });
 }
 
-// TODO Handle checkboxes, radios
 function validateAll(fields, opts) {
-  const filtered = opts.filterFields(fields);
+  const filtered = opts.fieldFilter(fields);
   return Promise.all(filtered.map(field => {
     return validateField(field, opts);
   }));
@@ -84,22 +89,16 @@ function validateAll(fields, opts) {
 function validateField(field, opts) {
   let validation;
 
-  // Custom validation
-  const custom = field.dataset.validateCustom;
-  if (custom && typeof opts.validateCustom[custom] === 'function') {
-    validation = opts.validateCustom[custom](field);
+  // Custom validations
+  if (typeof opts.customValidators[field.name] === 'function') {
+    validation = opts.customValidators[field.name](field);
 
   // Default HTML5 validations
-  } else if (field.validity) {
-    if (field.validity.valid) {
-      validation = Promise.resolve(field);
-    } else {
-      validation = Promise.reject(field);
-    }
-
+  } else if (!field.validity.valid) {
+    validation = Promise.reject(field);
   } else {
     validation = Promise.resolve(field);
-  };
+  }
 
   validation
     .then(opts.fieldValid)
