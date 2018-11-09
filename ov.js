@@ -22,12 +22,20 @@ function observablify(fn) {
 // An observable value
 //
 // const obsValue = ov('abc');
-// obsValue.subscribe(console.log);
+// obsValue.subscribe(logger);
 // obsValue();        // => 'abc'
-// obsValue('abc');   // => (identical value, skipped)
+// obsValue('abc');   // =>
 // obsValue('def');   // => 'def', 'abc'
 //
-
+// Modifying arrays and objects will not publish, but replacing them will.
+//
+// const obsArray = ov([1, 2, 3]);
+// obsArray.subscribe(logger);
+// obsArray();          // => [1, 2, 3]
+// obsArray().push(4);  // =>
+// obsArray();          // => [1, 2, 3, 4]
+// obsArray([4, 5]);    // => [4, 5], [1, 2, 3, 4]
+//
 export function ov(value) {
   function accessor(newValue) {
     if (arguments.length && newValue !== accessor.value) {
@@ -43,15 +51,4 @@ export function ov(value) {
   accessor.listeners = [];
 
   return observablify(accessor);
-}
-
-//
-// An observable array
-//
-export function oa(arr) {
-  const o = ov(arr);
-
-  // TODO Wrap all array methods (no Proxy, for now)
-
-  return o;
 }
