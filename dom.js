@@ -21,18 +21,13 @@ export function delegateEvent(container, selector, event, callback) {
   container.addEventListener(event, function(e) {
     var target = e.target;
     var matched;
-
-    do {
+    while (!matched && target && target !== e.currentTarget) {
       matched = target.matches(selector);
+      target = target.parentNode;
       if (matched) {
         callback(e);
       }
     }
-    while (
-      !matched
-      && target !== e.currentTarget
-      && (target = target.parentNode)
-    );
   }, true);
 }
 
