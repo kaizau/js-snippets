@@ -12,22 +12,28 @@
 
     // Do stuff
   }
-})(document, 'DOMContentLoaded');
+}(document, 'DOMContentLoaded'));
 
 //
 // Delegated events
 //
-function delegateEvent(container, selector, event, callback) {
+export function delegateEvent(container, selector, event, callback) {
   container.addEventListener(event, function(e) {
     var target = e.target;
+    var matched;
+
     do {
-      if (target.matches(selector)) {
+      matched = target.matches(selector);
+      if (matched) {
         callback(e);
-        return;
       }
     }
-    while (target = target.parentNode);
-  });
+    while (
+      !matched
+      && target !== e.currentTarget
+      && (target = target.parentNode)
+    );
+  }, true);
 }
 
 //
