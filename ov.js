@@ -23,7 +23,7 @@
 // const computed = ov(arg => { a() + b() + arg }, 3);
 // computed.subscribe(logger);
 // computed();          // => 6
-// foo(2);              // => Logs 7, 6
+// foo(2);              // => 7, 6
 //
 export default function ov(value) {
   function accessor(newValue) {
