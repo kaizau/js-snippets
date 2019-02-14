@@ -37,7 +37,7 @@ export default function ov(value) {
     } else if (newValue !== accessor.value) {
       accessor.previousValue = accessor.value;
 
-      if (typeof newValue !== 'function') {
+      if (typeof newValue !== "function") {
         accessor.value = newValue;
         accessor.publish();
       } else {
@@ -55,7 +55,7 @@ export default function ov(value) {
 
   accessor.previousValue = null;
   accessor.value = value;
-  accessor.listeners = [];
+  accessor.subscribers = [];
 
   return observablify(accessor);
 }
@@ -69,8 +69,8 @@ ov._computeChildren = [];
 function setComputedValue(fn, valueFn, args) {
   fn.compute = function compute() {
     const result = valueFn.apply(fn, args);
-    if (typeof result !== 'undefined') {
-      if (typeof result.then === 'function') {
+    if (typeof result !== "undefined") {
+      if (typeof result.then === "function") {
         result.then(asyncResult => fn(asyncResult));
       } else {
         fn(result);
@@ -92,26 +92,29 @@ function setComputedValue(fn, valueFn, args) {
 // Pass it an accessor function with the following properties:
 // - .value
 // - .previousValue
-// - .listeners
+// - .subscribers
 //
 function observablify(fn) {
   fn.publish = function publish() {
-    fn.listeners.forEach(handler =>
-      handler.call(fn, fn.value, fn.previousValue)
-    );
+    fn.subscribers.forEach(handler => {
+      if (!handler) return;
+      handler.call(fn, fn.value, fn.previousValue);
+    });
   };
 
   fn.subscribe = function subscribe(handler, immediate) {
-    fn.listeners.push(handler);
+    fn.subscribers.push(handler);
     if (immediate) {
       handler.call(fn, fn.value, fn.previousValue);
     }
   };
 
   fn.unsubscribe = function unsubscribe(handler) {
-    const index = fn.listeners.indexOf(handler);
+    const index = fn.subscribers.indexOf(handler);
     if (index > -1) {
-      fn.listeners.splice(index, 1);
+      // Does not reindex, so that publish .forEach() continues after
+      // .unsubscribe().
+      delete fn.subscribers[index];
     }
   };
 

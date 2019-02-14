@@ -1,5 +1,5 @@
 //
-// A tiny global event bus
+// A tiny event bus
 //
 
 export default {

@@ -5,10 +5,10 @@
 //
 // Dom-ready IIFE
 //
-(function(doc, load) {
-  doc.addEventListener(load, ready);
+(function(doc, loaded) {
+  doc.addEventListener(loaded, ready);
   function ready() {
-    doc.removeEventListener(load, ready);
+    doc.removeEventListener(loaded, ready);
 
     // Do stuff
   }
@@ -17,18 +17,23 @@
 //
 // Delegated events
 //
-export function delegateEvent(container, selector, event, callback) {
-  container.addEventListener(event, function(e) {
+if (
+  typeof Element.prototype.matches !== 'function'
+  && typeof Element.prototype.msMatchesSelector === 'function'
+) {
+  Element.prototype.matches = Element.prototype.msMatchesSelector;
+}
+function delegatedEvent(selector, handler) {
+  return function(e) {
     var target = e.target;
-    var matched;
-    while (!matched && target && target !== e.currentTarget) {
-      matched = target.matches(selector);
-      target = target.parentNode;
-      if (matched) {
-        callback(e);
+    while (target && target !== e.currentTarget) {
+      if (target.matches(selector)) {
+        handler(e);
+        break;
       }
+      target = target.parentNode;
     }
-  }, true);
+  }
 }
 
 //
