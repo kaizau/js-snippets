@@ -17,10 +17,7 @@
 //
 // Delegated events
 //
-if (
-  typeof Element.prototype.matches !== 'function'
-  && typeof Element.prototype.msMatchesSelector === 'function'
-) {
+if (!Element.prototype.matches) {
   Element.prototype.matches = Element.prototype.msMatchesSelector;
 }
 function delegatedEvent(selector, handler) {
