@@ -3,7 +3,7 @@
 // the form and field levels as well as conventions for custom validation.
 //
 // - Set <form novalidate> to suppress native validation messages
-// - Uses Object.assign, which should be polyfilled for IE11
+// - Uses Object.assign and Promise, which should be polyfilled for IE11
 //
 
 const defaultOptions = {

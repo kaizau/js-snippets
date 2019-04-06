@@ -28,7 +28,7 @@ export default {
 
   emit(event, ...args) {
     if (this.events[event]) {
-      // TODO set this value for handler?
+      // TODO set `this` context for handler?
       this.events[event].forEach(handler => handler(...args));
     }
   }
