@@ -14,8 +14,7 @@ function qsa(el, selector) {
     selector = el;
     el = document;
   }
-  var list = el.querySelectorAll(selector);
-  return Array.prototype.slice.call(list);
+  return Array.prototype.slice.call(el.querySelectorAll(selector));
 }
 
 //
