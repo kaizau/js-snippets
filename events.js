@@ -2,18 +2,19 @@
 // A tiny event bus
 //
 
-export default {
-  events: Object.create(null),
+const events = Object.create(null);
 
+export default {
   on(event, handler) {
-    (this.events[event] || this.events[event] = []).push(handler);
+    events[event] = events[event] || [];
+    events[event].push(handler);
   },
 
   off(event, handler) {
-    if (this.events[event]) {
-      const index = this.events[event].indexOf(handler);
+    if (events[event]) {
+      const index = events[event].indexOf(handler);
       if (index > -1) {
-        this.events[event].splice(index, 1);
+        events[event].splice(index, 1);
       }
     }
   },
@@ -27,9 +28,8 @@ export default {
   },
 
   emit(event, ...args) {
-    if (this.events[event]) {
-      // TODO set `this` context for handler?
-      this.events[event].forEach(handler => handler(...args));
+    if (events[event]) {
+      events[event].forEach((handler) => handler(...args));
     }
-  }
+  },
 };
