@@ -71,7 +71,7 @@ function setComputedValue(fn, valueFn, args) {
     const result = valueFn.apply(fn, args);
     if (typeof result !== "undefined") {
       if (typeof result.then === "function") {
-        result.then(asyncResult => fn(asyncResult));
+        result.then((asyncResult) => fn(asyncResult));
       } else {
         fn(result);
       }
@@ -82,7 +82,7 @@ function setComputedValue(fn, valueFn, args) {
   ov._computeActive = true;
   fn.compute();
   ov._computeActive = false;
-  ov._computeChildren.forEach(child => child.subscribe(fn.compute));
+  ov._computeChildren.forEach((child) => child.subscribe(fn.compute));
   ov._computeChildren.length = 0;
 }
 
@@ -96,7 +96,7 @@ function setComputedValue(fn, valueFn, args) {
 //
 function observablify(fn) {
   fn.publish = function publish() {
-    fn.subscribers.forEach(handler => {
+    fn.subscribers.forEach((handler) => {
       if (!handler) return;
       handler.call(fn, fn.value, fn.previousValue);
     });

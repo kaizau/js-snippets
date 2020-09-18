@@ -8,15 +8,15 @@
 
 const defaultOptions = {
   // Set to false to only validate on submit
-  trigger: 'change',
+  trigger: "change",
 
   // Select fields to validate. Can be used with validateCustom() to validate
   // non-standard elements (ex: Stripe Checkout)
-  fieldSelector: '[data-validate]',
+  fieldSelector: "[data-validate]",
 
   // Optionally exclude some fields before each validation
   fieldFilter(fields) {
-    return fields.filter(field => !field.disabled);
+    return fields.filter((field) => !field.disabled);
   },
 
   // Custom validators. Matched by field[name]. Must return a promise.
@@ -27,8 +27,7 @@ const defaultOptions = {
   },
 
   // Disable submit button, show loading icon, etc.
-  beforeValidate(form, fields) {
-  },
+  beforeValidate(form, fields) {},
 
   // Submit form, show message, etc.
   formValid(form, fields) {
@@ -36,13 +35,12 @@ const defaultOptions = {
   },
 
   // Show form errors, reset submit button, etc.
-  formError(form, fields) {
-  },
+  formError(form, fields) {},
 
   // Clear field error
   fieldValid(field) {
     if (field.validity.customError) {
-      field.setCustomValidity('');
+      field.setCustomValidity("");
     }
   },
 
@@ -51,16 +49,18 @@ const defaultOptions = {
     if (field.dataset.validate) {
       field.setCustomValidity(field.dataset.validate);
     }
-  }
+  },
 };
 
 export function validateForm(form, options = {}) {
   const opts = Object.assign({}, defaultOptions, options);
-  const fields = Array.prototype.slice.call(form.querySelectorAll(opts.fieldSelector));
+  const fields = Array.prototype.slice.call(
+    form.querySelectorAll(opts.fieldSelector)
+  );
 
   // Validate each field
   if (opts.trigger) {
-    form.addEventListener(opts.trigger, e => {
+    form.addEventListener(opts.trigger, (e) => {
       if (fields.indexOf(e.target) > -1) {
         opts.validateField(e.target, opts);
       }
@@ -68,7 +68,7 @@ export function validateForm(form, options = {}) {
   }
 
   // Validate all fields on submit
-  form.addEventListner('submit', e => {
+  form.addEventListner("submit", (e) => {
     e.preventDefault();
 
     opts.beforeValidate(form, fields);
@@ -81,28 +81,28 @@ export function validateForm(form, options = {}) {
 
 function validateAll(fields, opts) {
   const filtered = opts.fieldFilter(fields);
-  return Promise.all(filtered.map(field => {
-    return validateField(field, opts);
-  }));
+  return Promise.all(
+    filtered.map((field) => {
+      return validateField(field, opts);
+    })
+  );
 }
 
 function validateField(field, opts) {
   let validation;
 
   // Custom validations
-  if (typeof opts.customValidators[field.name] === 'function') {
+  if (typeof opts.customValidators[field.name] === "function") {
     validation = opts.customValidators[field.name](field);
 
-  // Default HTML5 validations
+    // Default HTML5 validations
   } else if (!field.validity.valid) {
     validation = Promise.reject(field);
   } else {
     validation = Promise.resolve(field);
   }
 
-  validation
-    .then(opts.fieldValid)
-    .catch(opts.fieldError);
+  validation.then(opts.fieldValid).catch(opts.fieldError);
 
   return validation;
 }

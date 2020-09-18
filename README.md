@@ -1,15 +1,12 @@
-## Some useful snippets.
+## Some useful snippets
 
-Useful libraries:
+Minimal libraries:
 
-- https://mithril.js.org/ (includes Promise polyfill)
 - https://github.com/pure-css/pure/
 - https://github.com/filamentgroup/select-css
 
 Useful polyfills:
 
-- https://github.com/ljharb/object.assign
-- https://github.com/jonathantneal/closest
 - https://github.com/iamdustan/smoothscroll
 - https://github.com/web-animations/web-animations-js
 

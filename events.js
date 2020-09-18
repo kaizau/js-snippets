@@ -29,7 +29,7 @@ export default {
 
   emit(event, ...args) {
     if (events[event]) {
-      events[event].forEach((handler) => handler(...args));
+      events[event].slice().forEach((handler) => handler(...args));
     }
   },
 };
