@@ -1,4 +1,4 @@
-## Some useful snippets
+## Some useful Browser JS snippets
 
 Minimal libraries:
 
