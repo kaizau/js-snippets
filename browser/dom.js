@@ -53,14 +53,3 @@ export function createEl(tag, props = {}, children = []) {
 
   return el;
 }
-
-//
-// Event delegation
-//
-export function delegatedEvent(parentEl, event, childQuery, handler) {
-  parentEl.addEventListener(event, function (e) {
-    if (e.target.closest(childQuery)) {
-      handler(e);
-    }
-  });
-}
